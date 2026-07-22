@@ -1,1 +1,21 @@
 @import 'tailwindcss';
+
+@theme {
+  /* Palette "Yonko / Nouveau Monde" */
+  --color-ink: #0d1b2a; /* noir bleuté — couleur principale */
+  --color-ink-surface: #14283d; /* surfaces (cartes, panneaux) */
+  --color-ink-border: #22374d; /* bordures, séparateurs */
+  --color-crimson: #9d0208; /* rouge profond — accent secondaire */
+  --color-crimson-light: #e5383b; /* rouge lisible sur fond sombre */
+  --color-gold: #ffba08; /* or — accent principal */
+  --color-gold-light: #ffd166; /* or clair pour les états hover */
+  --color-parchment: #f4ecd8; /* texte principal sur fond sombre */
+  --color-parchment-muted: #9fb0c3; /* texte secondaire */
+
+  --font-display: 'Pirata One', cursive;
+  --font-sans: 'Inter', sans-serif;
+}
+
+body {
+  @apply bg-ink text-parchment font-sans antialiased;
+}

@@ -70,17 +70,26 @@ VITE_SUPABASE_ANON_KEY=...   # clé "publishable" (sb_publishable_...) ou anon l
 ```
 Ne jamais utiliser la clé `secret`/`service_role` côté frontend.
 
-## Prochaines étapes (pas encore faites)
-1. `src/services/supabase.ts` : `createClient(import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY)`
-2. Types TypeScript (`src/types/`) pour `Tome` et `Reservation`
-3. Stores Pinia (`src/stores/`) : `collectionStore.ts`, `reservationStore.ts`
-4. Composants Vue :
+## Frontend — déjà en place
+1. `src/services/supabase.ts` : client Supabase (`createClient`)
+2. Types TypeScript (`src/types/`) : `Tome`, `Reservation`
+3. Stores Pinia (`src/stores/`) :
+   - `collectionStore.ts` : fetch des tomes, `setPossede`, compteur/progress, sync Realtime
+   - `reservationStore.ts` : fetch/réservation/annulation via `guest_token` (localStorage), sync Realtime
+   - `authStore.ts` : session Supabase Auth (login/logout du collectionneur, non prévu initialement mais nécessaire pour protéger l'admin)
+4. Composants Vue (`src/components/`) :
    - `ProgressHeader` (compteur, barre de progression)
    - `CollectionGrid` / `TomeCard`
    - `ReservationModal` (prénom + confirmation)
-   - `AdminPanel` (vue collectionneur, protégée par Supabase Auth)
-5. Séparation des vues : `CollectorView.vue` (connecté) vs `GuestView.vue` (public)
-6. Déploiement : Vercel ou Netlify
+   - `AdminPanel` (formulaire de login + vue collectionneur une fois authentifié)
+5. Vues séparées (`src/views/`) : `GuestView.vue` (route `/`, public) et `CollectorView.vue`
+   (route `/admin`, protection faite dans `AdminPanel` via `authStore.isAuthenticated`)
+6. Router configuré avec les deux routes ci-dessus
+
+## Prochaines étapes (pas encore faites)
+1. Déploiement : Vercel ou Netlify (+ configurer `VITE_SUPABASE_URL` / `VITE_SUPABASE_ANON_KEY` sur la plateforme)
+2. Tester le flux complet dans un navigateur (login collectionneur, réservation invité, sync Realtime entre deux onglets)
+3. Vérifier que `src/__tests__/App.spec.ts` couvre bien le contenu actuel de `App.vue`
 
 ## Conventions à respecter
 - Toujours créer une nouvelle migration Supabase pour tout changement de
