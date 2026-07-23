@@ -116,11 +116,11 @@ async function cancelReservation() {
     </template>
 
     <template v-else>
-      <p v-if="tome.possede" class="flex items-center gap-1 rounded-full bg-gold/10 px-2 py-0.5 text-xs font-medium text-gold">
+      <p v-if="tome.possede" class="flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-400">
         <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
           <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
         </svg>
-        Déjà dans la collection
+        Possédé
       </p>
       <template v-else-if="reservation">
         <p class="flex items-center gap-1 rounded-full bg-crimson/20 px-2 py-0.5 text-xs font-medium text-crimson-light">
