@@ -73,6 +73,7 @@ async function cancelReservation() {
     class="tome-card relative flex flex-col items-center gap-2 overflow-hidden rounded-lg border p-3 pl-4 text-center shadow-card transition-[transform,box-shadow] duration-200 hover:-translate-y-1 hover:shadow-card-hover active:scale-[0.98]"
     :class="cardStateClasses[state]"
   >
+    <p class="font-display text-sm tracking-wide text-gold">Tome {{ tome.numero }}</p>
     <div class="relative aspect-2/3 w-full overflow-hidden rounded-md bg-ink-border/40">
       <img
         v-if="tome.image_url && !imageFailed"
@@ -91,9 +92,6 @@ async function cancelReservation() {
           />
         </svg>
       </div>
-      <span class="absolute left-1 top-1 rounded-full bg-ink/80 px-2 py-0.5 font-display text-xs text-gold">
-        {{ tome.numero }}
-      </span>
     </div>
     <p v-if="tome.titre" class="line-clamp-2 text-xs text-parchment-muted">{{ tome.titre }}</p>
 
