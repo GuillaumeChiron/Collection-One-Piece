@@ -1,25 +1,41 @@
 <script setup lang="ts">
-import { onUnmounted, ref, watch } from 'vue'
+import { computed, onUnmounted, ref, watch } from 'vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useCollectionStore } from '@/stores/collectionStore'
+import { useReservationStore } from '@/stores/reservationStore'
+import { useTomeFilters } from '@/composables/useTomeFilters'
+import { useToast } from '@/composables/useToast'
 import ProgressHeader from './ProgressHeader.vue'
 import CollectionGrid from './CollectionGrid.vue'
+import FilterBar from './FilterBar.vue'
+import SkeletonGrid from './SkeletonGrid.vue'
 
 const authStore = useAuthStore()
 const collectionStore = useCollectionStore()
+const reservationStore = useReservationStore()
+const toast = useToast()
 
 const email = ref('')
 const password = ref('')
 const loginError = ref<string | null>(null)
 const loggingIn = ref(false)
 
+const { searchQuery, statusFilter, filteredTomes, resultCount } = useTomeFilters(
+  computed(() => collectionStore.tomes),
+  { isReserved: (tomeId) => !!reservationStore.reservationForTome(tomeId) },
+)
+
 let subscribed = false
 
-function loadCollection() {
+async function loadCollection() {
   if (subscribed) return
   subscribed = true
-  collectionStore.fetchTomes()
+  await collectionStore.fetchTomes()
+  if (collectionStore.error) toast.error(collectionStore.error)
   collectionStore.subscribeRealtime()
+  await reservationStore.fetchReservations()
+  if (reservationStore.error) toast.error(reservationStore.error)
+  reservationStore.subscribeRealtime()
 }
 
 watch(
@@ -32,6 +48,7 @@ watch(
 
 onUnmounted(() => {
   collectionStore.unsubscribeRealtime()
+  reservationStore.unsubscribeRealtime()
 })
 
 async function handleLogin() {
@@ -57,7 +74,7 @@ function handleLogout() {
   <form
     v-else-if="!authStore.isAuthenticated"
     @submit.prevent="handleLogin"
-    class="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-4 px-4"
+    class="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-4 rounded-xl bg-linear-to-b from-ink-surface to-ink px-6 py-8 shadow-panel"
   >
     <h1 class="text-center font-display text-4xl text-gold">Connexion collectionneur</h1>
     <label class="flex flex-col gap-1 text-sm text-parchment-muted">
@@ -81,7 +98,7 @@ function handleLogout() {
     <button
       type="submit"
       :disabled="loggingIn"
-      class="rounded-md bg-gold px-4 py-2 font-semibold text-ink transition-colors hover:bg-gold-light disabled:opacity-50"
+      class="rounded-md bg-gold px-4 py-2 font-semibold text-ink transition-colors active:scale-[0.97] hover:bg-gold-light disabled:opacity-50"
     >
       Se connecter
     </button>
@@ -93,12 +110,21 @@ function handleLogout() {
       <button
         type="button"
         @click="handleLogout"
-        class="rounded-full border border-crimson px-4 py-1.5 text-sm text-crimson-light transition-colors hover:bg-crimson hover:text-parchment"
+        class="rounded-full border border-crimson px-4 py-1.5 text-sm text-crimson-light transition-colors active:scale-[0.97] hover:bg-crimson hover:text-parchment"
       >
         Se déconnecter
       </button>
     </div>
     <ProgressHeader />
-    <CollectionGrid :tomes="collectionStore.tomes" :editable="true" />
+    <SkeletonGrid v-if="collectionStore.loading" />
+    <template v-else>
+      <FilterBar
+        v-model:search="searchQuery"
+        v-model:status="statusFilter"
+        :result-count="resultCount"
+        :total-count="collectionStore.totalCount"
+      />
+      <CollectionGrid :tomes="filteredTomes" :editable="true" />
+    </template>
   </div>
 </template>

@@ -84,7 +84,8 @@ export const useReservationStore = defineStore('reservation', () => {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'reservations' }, (payload) => {
         if (payload.eventType === 'INSERT') {
           const row = payload.new as Reservation
-          if (row.status === 'active') reservations.value.push(row)
+          const alreadyPresent = reservations.value.some((r) => r.id === row.id)
+          if (row.status === 'active' && !alreadyPresent) reservations.value.push(row)
         } else if (payload.eventType === 'UPDATE') {
           const row = payload.new as Reservation
           const index = reservations.value.findIndex((r) => r.id === row.id)
