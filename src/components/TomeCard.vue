@@ -65,6 +65,17 @@ async function cancelReservation() {
     toast.success('Réservation annulée')
   }
 }
+
+async function cancelReservationAsAdmin() {
+  if (!reservation.value) return
+
+  await reservationStore.cancelReservationAsAdmin(reservation.value.id)
+  if (reservationStore.error) {
+    toast.error(reservationStore.error)
+  } else {
+    toast.success('Réservation annulée')
+  }
+}
 </script>
 
 <template>
@@ -106,12 +117,21 @@ async function cancelReservation() {
         Possédé
       </label>
       <Transition name="fade-slide">
-        <p v-if="reservation" class="flex items-center gap-1 rounded-full bg-crimson/20 px-2 py-0.5 text-xs text-crimson-light">
-          <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-          </svg>
-          Réservé par {{ reservation.guest_name }}
-        </p>
+        <div v-if="reservation && !tome.possede" class="flex flex-col items-center gap-1">
+          <p class="flex items-center gap-1 rounded-full bg-crimson/20 px-2 py-0.5 text-xs text-crimson-light">
+            <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            Réservé par {{ reservation.guest_name }}
+          </p>
+          <button
+            type="button"
+            @click="cancelReservationAsAdmin"
+            class="rounded-full border border-crimson px-3 py-1 text-xs text-crimson-light transition-colors active:scale-[0.97] hover:bg-crimson hover:text-parchment"
+          >
+            Annuler la réservation
+          </button>
+        </div>
       </Transition>
     </template>
 

@@ -76,6 +76,19 @@ export const useReservationStore = defineStore('reservation', () => {
     }
   }
 
+  async function cancelReservationAsAdmin(reservationId: string) {
+    error.value = null
+
+    const { error: updateError } = await supabase
+      .from('reservations')
+      .update({ status: 'cancelled' })
+      .eq('id', reservationId)
+
+    if (updateError) {
+      error.value = updateError.message
+    }
+  }
+
   function subscribeRealtime() {
     if (channel) return
 
@@ -120,6 +133,7 @@ export const useReservationStore = defineStore('reservation', () => {
     fetchReservations,
     reserveTome,
     cancelReservation,
+    cancelReservationAsAdmin,
     subscribeRealtime,
     unsubscribeRealtime,
   }

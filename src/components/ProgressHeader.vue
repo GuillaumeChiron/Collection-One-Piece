@@ -16,7 +16,13 @@ const animatedPossede = useTransition(
 )
 
 const manquants = computed(() => collectionStore.totalCount - collectionStore.possedeCount)
-const reserves = computed(() => reservationStore.reservations.length)
+const reserves = computed(
+  () =>
+    reservationStore.reservations.filter((r) => {
+      const tome = collectionStore.tomes.find((t) => t.id === r.tome_id)
+      return tome && !tome.possede
+    }).length,
+)
 </script>
 
 <template>

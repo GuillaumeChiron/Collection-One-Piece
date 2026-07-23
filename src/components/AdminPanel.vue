@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref, watch } from 'vue'
+import { RouterLink } from 'vue-router'
 import { useAuthStore } from '@/stores/authStore'
 import { useCollectionStore } from '@/stores/collectionStore'
 import { useReservationStore } from '@/stores/reservationStore'
@@ -63,6 +64,7 @@ async function handleLogin() {
 
 function handleLogout() {
   authStore.signOut()
+  password.value = ''
 }
 </script>
 
@@ -76,6 +78,15 @@ function handleLogout() {
     @submit.prevent="handleLogin"
     class="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-4 rounded-xl bg-linear-to-b from-ink-surface to-ink px-6 py-8 shadow-panel"
   >
+    <RouterLink
+      to="/"
+      class="flex items-center gap-1 self-start text-sm text-parchment-muted transition-colors hover:text-gold"
+    >
+      <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+      </svg>
+      Retour
+    </RouterLink>
     <h1 class="text-center font-display text-4xl text-gold">Connexion collectionneur</h1>
     <label class="flex flex-col gap-1 text-sm text-parchment-muted">
       Email
